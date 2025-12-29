@@ -1,0 +1,4895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Workflow Room</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* CSS Variables for Themes */
+        :root {
+            --primary-color: #1e90ff;
+            --secondary-color: #0077e6;
+            --accent-color: #70c1ff;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4bb543;
+            --warning-color: #ffcc00;
+            --danger-color: #dc3545;
+            --text-color: #333;
+            --bg-color: #fff;
+            --card-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        .dark-mode {
+            --primary-color: #4da8ff;
+            --secondary-color: #0066cc;
+            --accent-color: #8ac9ff;
+            --light-color: #343a40;
+            --dark-color: #f8f9fa;
+            --text-color: #f8f9fa;
+            --bg-color: #212529;
+            --card-bg: #343a40;
+            --border-color: #495057;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+            line-height: 1.6;
+            font-size: 14px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Dot Animation Canvas */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: var(--dark-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+            font-size: 13px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.2);
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Page Styles */
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 15px 0;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Locked Page Styles */
+        #locked-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lock-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            position: relative;
+        }
+
+        .lock-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .lock-subtitle {
+            font-size: 1rem;
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+
+        .info-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 11;
+        }
+
+        .developer-link {
+            color: white;
+            margin-top: 15px;
+            display: inline-block;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            padding-bottom: 2px;
+            font-size: 13px;
+        }
+
+        .developer-link:hover {
+            border-bottom-color: white;
+        }
+
+        .countdown {
+            margin-top: 10px;
+            color: var(--warning-color);
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        /* Popup Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .popup-overlay.active .popup {
+            transform: translateY(0);
+        }
+
+        .popup h2 {
+            margin-bottom: 12px;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .popup p {
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        /* Loading Animation */
+        .loading-animation {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-animation.active {
+            display: flex;
+        }
+
+        .circle {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(30, 144, 255, 0.2);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Navbar Styles - Improved */
+        .navbar {
+            background-color: var(--bg-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 8px;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-item {
+            margin-left: 15px;
+            position: relative;
+        }
+
+        .nav-link {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+            position: relative;
+        }
+
+        .nav-link i {
+            font-size: 1.2rem;
+            margin-bottom: 3px;
+        }
+
+        .nav-link span {
+            font-size: 11px;
+            opacity: 1; /* Always visible for active item */
+            transform: translateY(0);
+            transition: var(--transition);
+        }
+
+        .nav-link:not(.active) span {
+            opacity: 0; /* Hidden for inactive items */
+            transform: translateY(8px);
+        }
+
+        .nav-link:hover span {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 13px;
+        }
+
+        .settings {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .settings-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+
+        .settings-btn:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .settings-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--bg-color);
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 10px;
+            min-width: 180px;
+            z-index: 10;
+            display: none;
+        }
+
+        .settings-dropdown.active {
+            display: block;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+        }
+
+        .settings-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .settings-item i {
+            margin-right: 10px;
+            width: 16px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .font-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+
+        .font-controls button {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 5px;
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+
+        .font-controls button:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Enhanced Floating Timer Styles */
+        .floating-timer {
+            position: fixed;
+            bottom: 80px;
+            left: 25px;
+            width: 140px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: move;
+            z-index: 100;
+            transition: var(--transition);
+            text-align: center;
+            padding: 5px;
+            line-height: 1.2;
+        }
+
+        .floating-timer:hover {
+            transform: scale(1.05);
+            background-color: var(--secondary-color);
+        }
+
+        /* Home Page Styles */
+        .hero {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 0 0 15px 15px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            animation: float 20s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); }
+            100% { transform: translateY(-1000px) translateX(1000px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1rem;
+            max-width: 700px;
+            margin: 0 auto 25px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="2" cy="2" r="1" fill="rgba(30,144,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .stat-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+
+        .chart-container {
+            height: 200px;
+            position: relative;
+        }
+
+        .goal-progress {
+            margin-top: 15px;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 13px;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .image-card {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .image-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(30, 144, 255, 0);
+            transition: var(--transition);
+            z-index: 1;
+        }
+
+        .image-card:hover::before {
+            background: rgba(30, 144, 255, 0.1);
+        }
+
+        .image-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-card.circular img {
+            border-radius: 50%;
+        }
+
+        .image-card-content {
+            padding: 12px;
+            background-color: var(--card-bg);
+            position: relative;
+            z-index: 2;
+        }
+
+        .image-card h3 {
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .image-card p {
+            font-size: 12px;
+        }
+
+        /* Home Page Carousel */
+        .home-carousel {
+            margin: 40px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .carousel-slides {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            position: relative;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .carousel-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .carousel-caption h3 {
+            margin-bottom: 5px;
+            font-size: 1.3rem;
+        }
+
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .carousel-dot.active {
+            background-color: var(--primary-color);
+        }
+
+        /* Section Styles */
+        .section {
+            display: none;
+            padding: 30px 0;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        .section-header p {
+            max-width: 700px;
+            margin: 0 auto;
+            color: var(--text-color);
+            opacity: 0.8;
+            font-size: 13px;
+        }
+
+        /* Enhanced Chat Section Styles */
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .lang-btn {
+            padding: 8px 16px;
+            background-color: var(--card-bg);
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+            border-radius: 5px 0 0 5px;
+            font-size: 13px;
+        }
+
+        .lang-btn:last-child {
+            border-radius: 0 5px 5px 0;
+        }
+
+        .lang-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .chat-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .chat-content {
+            display: contents;
+        }
+
+        .search-box {
+            margin-bottom: 15px;
+        }
+
+        .phrase-category {
+            margin-bottom: 25px;
+        }
+
+        .category-title {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 5px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: var(--bg-color);
+            min-width: 120px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .dropdown-content button {
+            color: var(--text-color);
+            padding: 10px 14px;
+            text-decoration: none;
+            display: block;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+        }
+
+        .dropdown-content button:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .phrase-item {
+            background-color: var(--card-bg);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: var(--transition);
+            position: relative;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .phrase-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+
+        .phrase-item.editing {
+            background-color: rgba(30, 144, 255, 0.1);
+        }
+
+        .phrase-text {
+            flex: 1;
+            margin-right: 12px;
+        }
+
+        .phrase-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .copy-btn {
+            color: var(--primary-color);
+        }
+
+        .edit-btn {
+            color: var(--success-color);
+        }
+
+        .delete-btn {
+            color: var(--danger-color);
+        }
+
+        .action-btn:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Call Section Styles */
+        .call-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .call-category {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .call-category h3 {
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2rem;
+        }
+
+        .call-phrase {
+            margin-bottom: 12px;
+            padding: 8px;
+            border-radius: 5px;
+            background-color: var(--bg-color);
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .call-phrase:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .call-phrase.editing {
+            background-color: rgba(30, 144, 255, 0.1);
+        }
+
+        /* Enhanced Mail Section Styles */
+        .mail-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .mail-content {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .mail-template {
+            margin-bottom: 25px;
+        }
+
+        .mail-template h3 {
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.2rem;
+        }
+
+        .mail-text {
+            background-color: var(--bg-color);
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 12px;
+            position: relative;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .mail-text.editing {
+            background-color: rgba(30, 144, 255, 0.1);
+        }
+
+        .mail-copy {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* Notes Section Styles */
+        .notes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .note-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        .note-card.pinned {
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .note-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .note-content {
+            margin-bottom: 12px;
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        .note-date {
+            font-size: 11px;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .add-note-fab {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .add-note-fab:hover {
+            transform: scale(1.1);
+            background-color: var(--secondary-color);
+        }
+
+        /* Note Editor Styles */
+        .note-editor {
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        .note-editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .note-editor-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            width: 100%;
+            border: none;
+            background: none;
+            outline: none;
+            color: var(--text-color);
+        }
+
+        .note-editor-content {
+            min-height: 350px;
+            width: 100%;
+            border: none;
+            background: none;
+            outline: none;
+            resize: none;
+            color: var(--text-color);
+            line-height: 1.6;
+            font-size: 13px;
+        }
+
+        .note-editor-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        /* Enhanced Tickets Section Styles */
+        .tickets-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 15px;
+        }
+
+        .tickets-sidebar {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            height: fit-content;
+            position: sticky;
+            top: 70px;
+        }
+
+        .tickets-sidebar h3 {
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .goal-form {
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .goal-form.active {
+            display: block;
+        }
+
+        .goal-icon {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 5px;
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+
+        .goal-icon:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .history-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            background-color: var(--bg-color);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+        }
+
+        .history-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .tickets-content {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .ticket-date {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .ticket-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .ticket-table th, .ticket-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .ticket-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        .ticket-table tr:hover {
+            background-color: rgba(30, 144, 255, 0.05);
+        }
+
+        .ticket-number {
+            font-weight: 600;
+        }
+
+        .ticket-type, .ticket-request, .ticket-level, .ticket-status {
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .ticket-status.resolu {
+            background-color: rgba(75, 181, 67, 0.2);
+            color: var(--success-color);
+        }
+
+        .ticket-status.attente {
+            background-color: rgba(255, 204, 0, 0.2);
+            color: var(--warning-color);
+        }
+
+        .ticket-status.pause {
+            background-color: rgba(30, 144, 255, 0.2);
+            color: var(--primary-color);
+        }
+
+        .ticket-status.ouvert {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--danger-color);
+        }
+
+        .add-ticket-btn {
+            display: block;
+            margin: 15px auto;
+        }
+
+        .tickets-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .ticket-stat {
+            background-color: var(--bg-color);
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .ticket-stat h4 {
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .ticket-stat .value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .ticket-chart {
+            margin-top: 25px;
+            height: 250px;
+        }
+
+        /* Enhanced Ticket and Chart Editing Styles */
+        .chart-data-editor {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .ticket-number-edit, .ticket-type-edit, .ticket-request-edit, 
+        .ticket-level-edit, .ticket-status-edit {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 13px;
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .ticket-status-display {
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+            min-width: 70px;
+            font-size: 12px;
+        }
+
+        .ticket-status-display.resolu {
+            background-color: rgba(75, 181, 67, 0.2);
+            color: var(--success-color);
+        }
+
+        .ticket-status-display.attente {
+            background-color: rgba(255, 204, 0, 0.2);
+            color: var(--warning-color);
+        }
+
+        .ticket-status-display.pause {
+            background-color: rgba(30, 144, 255, 0.2);
+            color: var(--primary-color);
+        }
+
+        .ticket-status-display.ouvert {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--danger-color);
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: var(--card-bg);
+            padding: 25px 0;
+            margin-top: 50px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer p {
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        /* Slider Styles */
+        .slider {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .slides {
+            display: flex;
+            width: 300%;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+
+        .slide {
+            width: 33.333%;
+            height: 100%;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-nav {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .slider-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .slider-dot.active {
+            background-color: white;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+        }
+
+        /* Search Icon Styles */
+        .search-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+
+        .search-toggle:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .search-container {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .search-container.active {
+            display: block;
+        }
+
+        /* Floating Action Buttons */
+        .fab-container {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 100;
+        }
+
+        .fab {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            background-color: var(--secondary-color);
+        }
+
+        /* Settings improvements */
+        .settings-section {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-section:last-child {
+            border-bottom: none;
+        }
+
+        .settings-section-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .settings-section-title i {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .font-slider {
+            flex: 1;
+            height: 5px;
+            background: var(--border-color);
+            outline: none;
+            border-radius: 5px;
+            -webkit-appearance: none;
+        }
+
+        .font-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider-toggle {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider-toggle:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider-toggle {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider-toggle:before {
+            transform: translateX(26px);
+        }
+
+        /* Enhanced Notification Bell */
+        .notification-bell {
+            position: relative;
+        }
+
+        .notification-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .notification-btn:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--bg-color);
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 10px;
+            min-width: 300px;
+            z-index: 10;
+            display: none;
+        }
+
+        .notification-dropdown.active {
+            display: block;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .notification-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            background-color: var(--card-bg);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+        }
+
+        .notification-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .notification-item.unread {
+            background-color: rgba(255, 204, 0, 0.1);
+            border-left: 3px solid var(--warning-color);
+        }
+
+        /* Macro Modal */
+        .macro-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .macro-modal.active {
+            display: flex;
+        }
+
+        .macro-modal-content {
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .macro-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .macro-modal-title {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+        }
+
+        .macro-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .chat-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .mail-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .call-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .tickets-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .image-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .lock-container {
+                padding: 25px 15px;
+            }
+            
+            .user-info {
+                display: none;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .hero {
+                padding: 30px 0;
+            }
+            
+            .section {
+                padding: 15px 0;
+            }
+            
+            .slider {
+                height: 180px;
+            }
+            
+            .ticket-table {
+                font-size: 12px;
+            }
+            
+            .ticket-table th, .ticket-table td {
+                padding: 6px 4px;
+            }
+        }
+
+        /* Floating Dots Animation */
+        .floating-dots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: floatUp 15s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(var(--tx, 0));
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dot Animation Canvas -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Locked Page -->
+    <div id="locked-page" class="page active">
+        <div class="floating-dots" id="floating-dots"></div>
+        <div class="lock-container">
+            <div class="info-icon" id="info-icon" title="Click for information">
+                <i class="fas fa-info"></i>
+            </div>
+            <h1 class="lock-title">My Workflow Room</h1>
+            <p class="lock-subtitle">Your personal work assistant</p>
+            
+            <form id="access-form">
+                <div class="form-group">
+                    <label for="fullname" class="form-label">Full Name</label>
+                    <input type="text" id="fullname" class="form-control" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="access-code" class="form-label">Access Code</label>
+                    <input type="password" id="access-code" class="form-control" placeholder="Enter access code" required>
+                </div>
+                
+                <button type="submit" class="btn" style="width: 100%;">Submit</button>
+                
+                <div class="countdown" id="countdown"></div>
+                <div id="access-alert"></div>
+            </form>
+            
+            <a href="mailto:ainakoloinadiarysarobidy.rakotondramanana@concentrix.com" class="developer-link">Contact Developer</a>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal-overlay" id="info-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">About My Workflow Room</h2>
+                <button class="modal-close" id="info-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <p>This website was created by <strong>Sarobidy Rhino Steeven</strong>, a passionate developer dedicated to creating tools that enhance productivity and streamline workflows.</p>
+                <p>My Workflow Room is designed specifically for customer service professionals, providing quick access to scripts, templates, and notes to improve efficiency and consistency in communication.</p>
+                <p>If you have any suggestions or need assistance, feel free to contact me using the link below.</p>
+                <div style="margin-top: 20px; text-align: center;">
+                    <a href="mailto:ainakoloinadiarysarobidy.rakotondramanana@concentrix.com" class="btn">Contact Developer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Animation -->
+    <div class="loading-animation" id="loading-animation">
+        <div class="circle"></div>
+        <p>Loading your workspace...</p>
+    </div>
+
+    <!-- Success Popup -->
+    <div class="popup-overlay" id="success-popup">
+        <div class="popup">
+            <h2>Access Granted!</h2>
+            <p>Thank you, <strong id="username-placeholder"></strong>, for using our website.</p>
+            <p>Enjoy your journey with us!</p>
+        </div>
+    </div>
+
+    <!-- Macro Modal -->
+    <div class="macro-modal" id="macro-modal">
+        <div class="macro-modal-content">
+            <div class="macro-modal-header">
+                <h2 class="macro-modal-title">Add New Macro</h2>
+                <button class="macro-modal-close" id="macro-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="macro-form" id="macro-form">
+                <div class="form-group">
+                    <label for="macro-title" class="form-label">Title</label>
+                    <input type="text" id="macro-title" class="form-control" placeholder="Enter macro title">
+                </div>
+                <div class="form-group">
+                    <label for="macro-content" class="form-label">Content</label>
+                    <textarea id="macro-content" class="form-control" rows="5" placeholder="Enter macro content"></textarea>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Add Macro</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="main-app" class="page">
+        <!-- Enhanced Floating Timer -->
+        <div class="floating-timer" id="floating-timer">
+            <span id="timer-display">Calculating...</span>
+        </div>
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="container nav-container">
+                <div class="logo">
+                    <i class="fas fa-project-diagram"></i>
+                    <span>My Workflow Room</span>
+                </div>
+                
+                <div class="user-info" id="user-info">
+                    Welcome, <span id="welcome-user">User</span>
+                </div>
+                
+                <ul class="nav-links">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-section="home">
+                            <i class="fas fa-home"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="call">
+                            <i class="fas fa-phone"></i>
+                            <span>Call</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="chat">
+                            <i class="fas fa-comments"></i>
+                            <span>Chat</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="mail">
+                            <i class="fas fa-envelope"></i>
+                            <span>Mail</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="notes">
+                            <i class="fas fa-sticky-note"></i>
+                            <span>Notes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="tickets">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>Tickets</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link notification-btn" id="notification-btn">
+                            <i class="fas fa-bell"></i>
+                            <span>Notifications</span>
+                            <span class="notification-badge" id="notification-badge">0</span>
+                        </button>
+                        <div class="notification-dropdown" id="notification-dropdown">
+                            <div class="notification-header">
+                                <h3 class="notification-title">Notifications</h3>
+                                <button class="btn btn-sm" id="clear-notifications">Clear All</button>
+                            </div>
+                            <div class="notification-list" id="notification-list">
+                                <!-- Notifications will be loaded here -->
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link settings-btn" id="settings-btn">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </button>
+                        <div class="settings-dropdown" id="settings-dropdown">
+                            <div class="settings-section">
+                                <div class="settings-section-title">
+                                    <i class="fas fa-font"></i>
+                                    <span>Font Size</span>
+                                </div>
+                                <div class="slider-container">
+                                    <i class="fas fa-font" style="color: var(--text-color);"></i>
+                                    <input type="range" min="0.8" max="1.5" step="0.1" value="1" class="font-slider" id="font-slider">
+                                    <i class="fas fa-font" style="color: var(--text-color); font-size: 1.2rem;"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <div class="settings-section-title">
+                                    <i class="fas fa-moon"></i>
+                                    <span>Dark Mode</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="theme-switch">
+                                    <span class="slider-toggle"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <div class="settings-item" id="about-btn">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>About Us</span>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <div class="settings-item" id="logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Log Out</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <div class="container hero-content">
+                    <h1>Welcome to My Workflow Room</h1>
+                    <p>Your personal assistant for customer service excellence. Access scripts, templates, and resources to enhance your workflow.</p>
+                    <button class="btn btn-accent" id="get-started-btn">Get Started</button>
+                </div>
+            </div>
+            
+            <div class="container">
+                <!-- Home Carousel -->
+                <div class="home-carousel">
+                    <div class="carousel-slides" id="carousel-slides">
+                        <div class="carousel-slide">
+                            <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" alt="Customer service representative">
+                            <div class="carousel-caption">
+                                <h3>Professional Customer Support</h3>
+                                <p>Our advisors provide exceptional service with the help of our workflow tools</p>
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Team collaboration">
+                            <div class="carousel-caption">
+                                <h3>Efficient Team Collaboration</h3>
+                                <p>Work together seamlessly with shared scripts and templates</p>
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Problem solving">
+                            <div class="carousel-caption">
+                                <h3>Effective Problem Resolution</h3>
+                                <p>Quickly resolve customer issues with our comprehensive toolkit</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-nav">
+                        <div class="carousel-dot active" data-slide="0"></div>
+                        <div class="carousel-dot" data-slide="1"></div>
+                        <div class="carousel-dot" data-slide="2"></div>
+                    </div>
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <h3>Daily Goal Progress</h3>
+                        <div class="chart-container">
+                            <canvas id="goalChart"></canvas>
+                        </div>
+                        <div class="goal-progress" id="goal-progress">
+                            You reached 0% of your daily goal.
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h3>Ticket Statistics</h3>
+                        <div class="chart-container">
+                            <canvas id="ticketChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="image-grid">
+                    <div class="image-card" data-section="call">
+                        <img src="https://images.unsplash.com/photo-1587560699334-cc4ff634909a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Customer advisor making a call">
+                        <div class="image-card-content">
+                            <h3>Call Scripts</h3>
+                            <p>Professional phone conversation templates</p>
+                        </div>
+                    </div>
+                    
+                    <div class="image-card" data-section="mail">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" alt="Customer advisor writing an email">
+                        <div class="image-card-content">
+                            <h3>Email Templates</h3>
+                            <p>Pre-written email responses for common inquiries</p>
+                        </div>
+                    </div>
+                    
+                    <div class="image-card circular" data-section="chat">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Customer service chat with clients">
+                        <div class="image-card-content">
+                            <h3>Chat Responses</h3>
+                            <p>Quick responses for live chat support</p>
+                        </div>
+                    </div>
+
+                    <div class="image-card" data-section="notes">
+                        <img src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Taking notes">
+                        <div class="image-card-content">
+                            <h3>Notes</h3>
+                            <p>Create and organize your personal notes</p>
+                        </div>
+                    </div>
+
+                    <div class="image-card" data-section="tickets">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Ticket management">
+                        <div class="image-card-content">
+                            <h3>Ticket Management</h3>
+                            <p>Track and manage customer service tickets</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call Section -->
+        <section id="call" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Call Scripts</h2>
+                    <p>Professional phone conversation templates for customer service</p>
+                </div>
+                
+                <!-- Slider -->
+                <div class="slider">
+                    <div class="slides">
+                        <div class="slide">
+                            <img src="https://images.unsplash.com/photo-1587560699334-cc4ff634909a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Customer service call">
+                        </div>
+                        <div class="slide">
+                            <img src="https://images.unsplash.com/photo-1551836026-d5c88ac6d4af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Professional communication">
+                        </div>
+                        <div class="slide">
+                            <img src="https://images.unsplash.com/photo-1584433144859-1fc3ab64a957?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1030&q=80" alt="Customer support">
+                        </div>
+                    </div>
+                    <div class="slider-nav">
+                        <div class="slider-dot active" data-slide="0"></div>
+                        <div class="slider-dot" data-slide="1"></div>
+                        <div class="slider-dot" data-slide="2"></div>
+                    </div>
+                </div>
+                
+                <div class="language-selector">
+                    <button class="lang-btn active" data-lang="english">English</button>
+                    <button class="lang-btn" data-lang="french">French</button>
+                </div>
+                
+                <div class="call-container" id="call-content">
+                    <!-- Call scripts will be loaded here dynamically -->
+                </div>
+                
+                <!-- Floating Action Button for Call -->
+                <div class="fab-container">
+                    <button class="fab" id="add-call-category" title="Add New Category">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Enhanced Chat Section -->
+        <section id="chat" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Chat Responses</h2>
+                    <p>Quick responses for live chat support in English and French</p>
+                    <button class="search-toggle" id="search-toggle" title="Toggle Search">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                
+                <!-- Search Container -->
+                <div class="search-container" id="search-container">
+                    <div class="search-box card">
+                        <h3>Search Phrases</h3>
+                        <input type="text" id="chat-search" class="form-control" placeholder="Type keywords...">
+                    </div>
+                    <div class="search-results card" id="search-results">
+                        <h3>Search Results</h3>
+                        <div id="search-results-content">
+                            <!-- Search results will appear here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="language-selector">
+                    <button class="lang-btn active" data-lang="english">English</button>
+                    <button class="lang-btn" data-lang="french">French</button>
+                </div>
+                
+                <div class="chat-container" id="chat-container">
+                    <div class="chat-content" id="chat-content">
+                        <!-- Chat phrases will be loaded here dynamically in 3 columns -->
+                    </div>
+                </div>
+                
+                <!-- Floating Action Button for Chat -->
+                <div class="fab-container">
+                    <button class="fab" id="add-chat-category" title="Add New Category">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Enhanced Mail Section -->
+        <section id="mail" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Email Templates</h2>
+                    <p>Pre-written email responses for common customer inquiries</p>
+                </div>
+                
+                <div class="language-selector">
+                    <button class="lang-btn active" data-lang="english">English</button>
+                    <button class="lang-btn" data-lang="french">French</button>
+                </div>
+                
+                <div class="mail-container">
+                    <div class="mail-content">
+                        <div class="mail-template">
+                            <h3>English Templates</h3>
+                            
+                            <div class="mail-text">
+                                <button class="mail-copy" title="Copy to clipboard">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <h4>General Model ENG</h4>
+                                <p>Dear Madam,<br><br>Thank you for your message.<br><br>Should you need any further information, we remain at your entire disposal.</p>
+                            </div>
+                            
+                            <div class="mail-text">
+                                <button class="mail-copy" title="Copy to clipboard">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <h4>ANNULATION CONFIRMEE ENG</h4>
+                                <p>Dear Madam,<br><br>Thank you for your message.<br><br>We confirm that we have proceeded with the cancellation of your order.<br><br>Your refund will appear in your bank account within a few days.<br><br>Should you need any further information, we remain at your entire disposal.</p>
+                            </div>
+                        </div>
+
+                        <div class="mail-template">
+                            <h3>French Templates</h3>
+                            
+                            <div class="mail-text">
+                                <button class="mail-copy" title="Copy to clipboard">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <h4>General Model FR</h4>
+                                <p>Chère Madame,<br><br>Merci pour votre message.<br><br>Nous restons à votre entière disposition pour tout complément d'information.</p>
+                            </div>
+                            
+                            <div class="mail-text">
+                                <button class="mail-copy" title="Copy to clipboard">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <h4>ANNULATION CONFIRMEE FR</h4>
+                                <p>Chère Madame,<br><br>Merci pour votre message.<br><br>Nous vous confirmons que nous venons de procéder à l'annulation de votre commande.<br><br>Ainsi, votre remboursement apparaîtra sur votre compte bancaire d'ici quelques jours.<br><br>Nous restons à votre entière disposition pour tout complément d'information.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mail-content" id="user-mail-templates">
+                        <div class="mail-template">
+                            <h3>Your Templates</h3>
+                            <!-- User-added mail templates will appear here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Floating Action Button for Mail -->
+                <div class="fab-container">
+                    <button class="fab" id="add-mail-category" title="Add New Category">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notes Section -->
+        <section id="notes" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Notes</h2>
+                    <p>Create and manage your personal notes</p>
+                </div>
+                
+                <div class="notes-container" id="notes-container">
+                    <!-- Notes will be loaded here dynamically -->
+                </div>
+                
+                <!-- Floating Action Button for Notes -->
+                <div class="fab-container">
+                    <button class="fab" id="add-note-fab">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Note Editor Section -->
+        <section id="note-editor" class="section">
+            <div class="container">
+                <div class="note-editor">
+                    <div class="note-editor-header">
+                        <input type="text" class="note-editor-title" id="note-editor-title" placeholder="Title">
+                        <button class="btn" id="back-to-notes">
+                            <i class="fas fa-arrow-left"></i> Back to Notes
+                        </button>
+                    </div>
+                    <textarea class="note-editor-content" id="note-editor-content" placeholder="Content..."></textarea>
+                    <div class="note-editor-actions">
+                        <div>
+                            <input type="checkbox" id="note-editor-pinned">
+                            <label for="note-editor-pinned">Pin this note</label>
+                        </div>
+                        <button class="btn btn-accent" id="save-note">Save Note</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Enhanced Tickets Section -->
+        <section id="tickets" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Ticket Management</h2>
+                    <p>Track and manage your customer service tickets</p>
+                </div>
+                
+                <div class="tickets-container">
+                    <div class="tickets-sidebar">
+                        <h3>Daily Goal
+                            <button class="goal-icon" id="goal-icon" title="Set Daily Goal">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </h3>
+                        <form class="goal-form" id="goal-form">
+                            <div class="form-group">
+                                <label for="daily-goal" class="form-label">Set your daily goal</label>
+                                <input type="number" id="daily-goal" class="form-control" placeholder="e.g., 30" min="1">
+                            </div>
+                            <button type="submit" class="btn" style="width: 100%;">Set Goal</button>
+                        </form>
+                        
+                        <h3>History</h3>
+                        <div class="history-list" id="history-list">
+                            <!-- History items will appear here -->
+                        </div>
+                    </div>
+                    
+                    <div class="tickets-content">
+                        <div class="ticket-date" id="ticket-date">
+                            <!-- Current date will appear here -->
+                        </div>
+                        
+                        <table class="ticket-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticket Number</th>
+                                    <th>Type</th>
+                                    <th>Request</th>
+                                    <th>Level</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ticket-table-body">
+                                <!-- Tickets will appear here -->
+                            </tbody>
+                        </table>
+                        
+                        <button class="btn btn-accent add-ticket-btn" id="add-ticket-btn">Add New Ticket</button>
+                        
+                        <div class="tickets-stats">
+                            <div class="ticket-stat">
+                                <h4>Ticket traité aujourd'hui</h4>
+                                <div class="value" id="tickets-today">0</div>
+                            </div>
+                            <div class="ticket-stat">
+                                <h4>Ticket résolu</h4>
+                                <div class="value" id="tickets-resolved">0</div>
+                            </div>
+                            <div class="ticket-stat">
+                                <h4>Ticket en pause</h4>
+                                <div class="value" id="tickets-paused">0</div>
+                            </div>
+                            <div class="ticket-stat">
+                                <h4>Ticket en attente</h4>
+                                <div class="value" id="tickets-pending">0</div>
+                            </div>
+                            <div class="ticket-stat">
+                                <h4>Cette semaine</h4>
+                                <div class="value" id="tickets-week">0</div>
+                            </div>
+                            <div class="ticket-stat">
+                                <h4>Objectif atteint</h4>
+                                <div class="value" id="goal-percentage">0%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="ticket-chart">
+                            <canvas id="tickets-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Floating Action Button for Tickets -->
+                <div class="fab-container">
+                    <button class="fab" id="add-ticket-fab" title="Add New Ticket">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2025 My Workflow Room. All rights reserved.</p>
+                <p>Developed by Sarobidy Rhino Steeven</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Ticket Modal -->
+    <div class="modal-overlay" id="ticket-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="ticket-modal-title">Edit Ticket</h2>
+                <button class="modal-close" id="ticket-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <form id="ticket-form">
+                    <div class="form-group">
+                        <label for="ticket-number" class="form-label">Ticket Number</label>
+                        <input type="text" id="ticket-number" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticket-type" class="form-label">Type</label>
+                        <select id="ticket-type" class="form-control">
+                            <option value="chat">Chat</option>
+                            <option value="mail">Mail</option>
+                            <option value="call">Call</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticket-request" class="form-label">Request</label>
+                        <select id="ticket-request" class="form-control">
+                            <option value="Cancellation">Cancellation</option>
+                            <option value="Return">Return</option>
+                            <option value="Information request">Information request</option>
+                            <option value="Delivery tracking">Delivery tracking</option>
+                            <option value="Order status">Order status</option>
+                            <option value="Discount and sales">Discount and sales</option>
+                            <option value="Promotion">Promotion</option>
+                            <option value="Complaint/claim">Complaint/claim</option>
+                            <option value="Repair">Repair</option>
+                            <option value="New order">New order</option>
+                            <option value="New label">New label</option>
+                            <option value="Tracking number">Tracking number</option>
+                            <option value="Late shipment">Late shipment</option>
+                            <option value="Shipping error">Shipping error</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticket-level" class="form-label">Level</label>
+                        <select id="ticket-level" class="form-control">
+                            <option value="L0">L0</option>
+                            <option value="L1">L1</option>
+                            <option value="L2">L2</option>
+                            <option value="L3">L3</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticket-status" class="form-label">Status</label>
+                        <select id="ticket-status" class="form-control">
+                            <option value="resolu">Résolu</option>
+                            <option value="attente">En attente</option>
+                            <option value="pause">En pause</option>
+                            <option value="ouvert">Ouvert</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticket-notes" class="form-label">Notes</label>
+                        <textarea id="ticket-notes" class="form-control" rows="3" placeholder="Add any additional notes..."></textarea>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;" id="ticket-submit-btn">Save Ticket</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data for the application
+        const defaultChatData = {
+            english: [
+                {
+                    category: "STARTING CHAT",
+                    phrases: [
+                        "Hello, welcome to our LiveChat Polène.",
+                        "How can we help you today?"
+                    ]
+                },
+                {
+                    category: "ORDER NUMBER",
+                    phrases: [
+                        "So that I can better assess the situation, could you please provide your order number, or in case of an in-store purchase, provide a copy of your receipt?",
+                        "So that I can better assess the situation, could you please provide your order number?"
+                    ]
+                },
+                {
+                    category: "ACCEPTING",
+                    phrases: [
+                        "Of course, I'll take care of it right away.",
+                        "Sure, I'll handle it immediately.",
+                        "Absolutely",
+                        "Indeed",
+                        "Definitely",
+                        "Alright"
+                    ]
+                },
+                {
+                    category: "ON HOLD",
+                    phrases: [
+                        "Alright! would you mind waiting for 2 minutes while I check this for you?",
+                        "Is it possible again to wait for another 2 minutes while I am checking this for you? Please do not leave the chat.",
+                        "One moment, please.",
+                        "Please hold on a moment.",
+                        "Kindly give me a moment, please.",
+                        "Just a moment while I check that for you.",
+                        "Please allow me a brief moment to verify."
+                    ]
+                },
+                {
+                    category: "SOLUTION",
+                    phrases: [
+                        "Following our verification, I can confirm that…",
+                        "I have checked the details and can confirm that…",
+                        "Further to my verification, I can confirm that…",
+                        "After looking into it, I can confirm that…",
+                        "Upon verification, I would like to inform you that…",
+                        "After reviewing your file, I confirm that…"
+                    ]
+                }
+            ],
+            french: [
+                {
+                    category: "ACCEPTATION",
+                    phrases: [
+                        "Bien sûr, je m'en occupe tout de suite.",
+                        "Avec plaisir, je vais faire le nécessaire pour vous.",
+                        "Parfait, je m'occupe de cela immédiatement.",
+                        "Très bien, je confirme que c'est accepté et je passe à l'action."
+                    ]
+                },
+                {
+                    category: "DIRE OUI",
+                    phrases: [
+                        "Bien sûr, je m'en occupe tout de suite.",
+                        "D'accord.",
+                        "Certainement",
+                        "Tout à fait",
+                        "Absolument"
+                    ]
+                },
+                {
+                    category: "MISE EN ATTENTE",
+                    phrases: [
+                        "Veuillez patienter quelques instants, le temps que je procède à la vérification. Cela ne prendra pas plus de cinq minutes.",
+                        "Merci de patienter quelques instants pendant que je vérifie les informations nécessaires pendant à peu près cinq minutes."
+                    ]
+                },
+                {
+                    category: "APRES LA MISE EN ATTENTE",
+                    phrases: [
+                        "Merci beaucoup pour votre patience, je suis navré du délai.",
+                        "Je vous présente mes excuses pour l'attente et vous remercie de votre compréhension.",
+                        "Merci pour votre patience, je m'excuse du temps que cela a pris."
+                    ]
+                },
+                {
+                    category: "APRES VERIFICATION",
+                    phrases: [
+                        "Après vérification, je vous confirme que …",
+                        "Suite à ma vérification, je peux vous confirmer que …",
+                        "Après avoir consulté votre dossier, je vous confirme que …",
+                        "Après contrôle des informations, je vous confirme que …",
+                        "Je me suis renseigné(e) et je peux vous confirmer que …"
+                    ]
+                }
+            ]
+        };
+
+        const defaultCallData = {
+            english: [
+                {
+                    category: "OPENING",
+                    phrases: [
+                        "Hello you've reached Polene This is ... How can I assist you today?",
+                        "Polene Hello, this is ... speaking. How can I assist you please?",
+                        "Thank you for calling Polene This is Precious How can I help you?"
+                    ]
+                },
+                {
+                    category: "REPHRASE AND QUESTIONS",
+                    phrases: [
+                        "Therefore, if I understand correctly, you wish to inquire about",
+                        "Regarding ... I can confirm that ....",
+                        "Just to confirm, you would like to ....Is that correct?"
+                    ]
+                },
+                {
+                    category: "CLIENT IDENTIFICATION",
+                    phrases: [
+                        "Could you please provide the following details to help us serve your more effectevely?",
+                        "In order to proceed with your request, may I ask for the following information?",
+                        "In order to assist you more efficiently, could you please give me ...?"
+                    ]
+                },
+                {
+                    category: "PUTTING ON HOLD",
+                    phrases: [
+                        "So that I can check that for you, may I place you on hold for up to 2 min at most?",
+                        "May I kindly place you on hold for a maximum of two minutes while I complete the verification?",
+                        "Would you mind holding for just 2 min maximum while I chack this for you?"
+                    ]
+                }
+            ],
+            french: [
+                {
+                    category: "BONJOUR",
+                    phrases: [
+                        "Bonjour et bienvenue chez Polène, Précieux à votre écoute, que puis-je faire pour vous aujourd'hui?",
+                        "Bonjour, vous êtes bien en ligne avec le service client Polène, comment puis-je vous aider?",
+                        "Polène, bonjour ! Merci d'avoir appelé, en quoi puis-je vous assister?"
+                    ]
+                },
+                {
+                    category: "REFORMULATION",
+                    phrases: [
+                        "Si je comprends bien, vous souhaitez dire que…",
+                        "concernant...",
+                        "Juste pour être sûr(e) d'avoir bien compris…",
+                        "Si je reformule votre demande, il s'agit de…",
+                        "Donc, si je résume, votre demande concerne…"
+                    ]
+                },
+                {
+                    category: "NUMERO DE COMMANDE",
+                    phrases: [
+                        "Pour accéder à votre dossier, pourriez-vous s'il vous plaît me communiquer votre numéro de commande?",
+                        "J'aurais également besoin de votre adresse e-mail utilisée lors de l'achat.",
+                        "Enfin, pouvez-vous me confirmer votre nom complet, s'il vous plaît?"
+                    ]
+                },
+                {
+                    category: "MIS EN ATTENTE",
+                    phrases: [
+                        "Pour que je puisse verifier concernant votre demande puis-je vous mettre en attente pendant 2 minutes maximum?",
+                        "Puis-je vous mettre brièvement en attente, s'il vous plaît?",
+                        "Merci, je reviens vers vous dans un instant."
+                    ]
+                }
+            ]
+        };
+
+        // Application State
+        let currentUser = null;
+        let attempts = 3;
+        let countdownActive = false;
+        let countdownTime = 0;
+        let countdownInterval = null;
+        let currentFontSize = 1; // Base font size multiplier
+        let accessExpiration = null;
+        let timerInterval = null;
+        let editingNoteId = null;
+        let sliderInterval = null;
+        let currentSlide = 0;
+        let carouselInterval = null;
+        let carouselSlide = 0;
+        let longPressTimer = null;
+        let editingElement = null;
+        let editingTicketIndex = null;
+        let editingTicketDate = null;
+        let isDragging = false;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+        let particles = [];
+        let animationFrameId = null;
+
+        // Load data from localStorage or use defaults
+        let chatData = JSON.parse(localStorage.getItem('myWorkPal_chatData')) || defaultChatData;
+        let callData = JSON.parse(localStorage.getItem('myWorkPal_callData')) || defaultCallData;
+        let mailData = JSON.parse(localStorage.getItem('myWorkPal_mailData')) || {};
+        let notesData = JSON.parse(localStorage.getItem('myWorkPal_notesData')) || [];
+        let ticketsData = JSON.parse(localStorage.getItem('myWorkPal_ticketsData')) || {};
+        let dailyGoal = parseInt(localStorage.getItem('myWorkPal_dailyGoal')) || 30;
+        let notifications = JSON.parse(localStorage.getItem('myWorkPal_notifications')) || [];
+        let savedTheme = localStorage.getItem('myWorkPal_theme') || 'light';
+        let savedFontSize = parseFloat(localStorage.getItem('myWorkPal_fontSize')) || 1;
+
+        // DOM Elements
+        const lockedPage = document.getElementById('locked-page');
+        const mainApp = document.getElementById('main-app');
+        const accessForm = document.getElementById('access-form');
+        const fullnameInput = document.getElementById('fullname');
+        const accessCodeInput = document.getElementById('access-code');
+        const countdownElement = document.getElementById('countdown');
+        const accessAlert = document.getElementById('access-alert');
+        const loadingAnimation = document.getElementById('loading-animation');
+        const successPopup = document.getElementById('success-popup');
+        const usernamePlaceholder = document.getElementById('username-placeholder');
+        const themeSwitch = document.getElementById('theme-switch');
+        const fontSlider = document.getElementById('font-slider');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.section');
+        const imageCards = document.querySelectorAll('.image-card');
+        const langButtons = document.querySelectorAll('.lang-btn');
+        const chatSearch = document.getElementById('chat-search');
+        const chatContent = document.getElementById('chat-content');
+        const callContent = document.getElementById('call-content');
+        const macroForm = document.getElementById('macro-form');
+        const macroModal = document.getElementById('macro-modal');
+        const macroModalClose = document.getElementById('macro-modal-close');
+        const userMailTemplates = document.getElementById('user-mail-templates');
+        const mailCopyButtons = document.querySelectorAll('.mail-copy');
+        const floatingTimer = document.getElementById('floating-timer');
+        const timerDisplay = document.getElementById('timer-display');
+        const infoIcon = document.getElementById('info-icon');
+        const infoModal = document.getElementById('info-modal');
+        const infoClose = document.getElementById('info-close');
+        const addChatCategoryBtn = document.getElementById('add-chat-category');
+        const addCallCategoryBtn = document.getElementById('add-call-category');
+        const addMailCategoryBtn = document.getElementById('add-mail-category');
+        const addTicketFab = document.getElementById('add-ticket-fab');
+        const notesContainer = document.getElementById('notes-container');
+        const addNoteFab = document.getElementById('add-note-fab');
+        const noteEditorSection = document.getElementById('note-editor');
+        const noteEditorTitle = document.getElementById('note-editor-title');
+        const noteEditorContent = document.getElementById('note-editor-content');
+        const noteEditorPinned = document.getElementById('note-editor-pinned');
+        const backToNotesBtn = document.getElementById('back-to-notes');
+        const saveNoteBtn = document.getElementById('save-note');
+        const userInfo = document.getElementById('user-info');
+        const welcomeUser = document.getElementById('welcome-user');
+        const logoutBtn = document.getElementById('logout-btn');
+        const aboutBtn = document.getElementById('about-btn');
+        const getStartedBtn = document.getElementById('get-started-btn');
+        const searchResultsContent = document.getElementById('search-results-content');
+        const searchToggle = document.getElementById('search-toggle');
+        const searchContainer = document.getElementById('search-container');
+        const slider = document.querySelector('.slider');
+        const slides = document.querySelector('.slides');
+        const sliderDots = document.querySelectorAll('.slider-dot');
+        const carouselSlides = document.getElementById('carousel-slides');
+        const carouselDots = document.querySelectorAll('.carousel-dot');
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsDropdown = document.getElementById('settings-dropdown');
+        const notificationBtn = document.getElementById('notification-btn');
+        const notificationBadge = document.getElementById('notification-badge');
+        const notificationDropdown = document.getElementById('notification-dropdown');
+        const notificationList = document.getElementById('notification-list');
+        const clearNotificationsBtn = document.getElementById('clear-notifications');
+        const goalForm = document.getElementById('goal-form');
+        const dailyGoalInput = document.getElementById('daily-goal');
+        const ticketDate = document.getElementById('ticket-date');
+        const ticketTableBody = document.getElementById('ticket-table-body');
+        const addTicketBtn = document.getElementById('add-ticket-btn');
+        const historyList = document.getElementById('history-list');
+        const ticketsToday = document.getElementById('tickets-today');
+        const ticketsResolved = document.getElementById('tickets-resolved');
+        const ticketsPaused = document.getElementById('tickets-paused');
+        const ticketsPending = document.getElementById('tickets-pending');
+        const ticketsWeek = document.getElementById('tickets-week');
+        const goalPercentage = document.getElementById('goal-percentage');
+        const goalProgress = document.getElementById('goal-progress');
+        const ticketModal = document.getElementById('ticket-modal');
+        const ticketForm = document.getElementById('ticket-form');
+        const ticketClose = document.getElementById('ticket-close');
+        const ticketSubmitBtn = document.getElementById('ticket-submit-btn');
+        const ticketModalTitle = document.getElementById('ticket-modal-title');
+        const goalIcon = document.getElementById('goal-icon');
+        const particlesCanvas = document.getElementById('particles-canvas');
+        const floatingDots = document.getElementById('floating-dots');
+
+        // Chart variables
+        let goalChart = null;
+        let ticketChart = null;
+        let ticketsChart = null;
+
+        // Check if access is still valid on page load
+        function checkAccessValidity() {
+            const savedExpiration = localStorage.getItem('myWorkPal_accessExpiration');
+            if (savedExpiration) {
+                const now = new Date().getTime();
+                if (now < parseInt(savedExpiration)) {
+                    // Access is still valid
+                    accessExpiration = parseInt(savedExpiration);
+                    startAccessTimer();
+                    
+                    // Show welcome message with user name
+                    const savedUser = localStorage.getItem('myWorkPal_currentUser');
+                    if (savedUser) {
+                        welcomeUser.textContent = savedUser;
+                        userInfo.style.display = 'flex';
+                    }
+                    
+                    lockedPage.classList.remove('active');
+                    mainApp.classList.add('active');
+                    return true;
+                } else {
+                    // Access has expired
+                    localStorage.removeItem('myWorkPal_accessExpiration');
+                    localStorage.removeItem('myWorkPal_currentUser');
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        // Start access timer
+        function startAccessTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const timeLeft = accessExpiration - now;
+                
+                if (timeLeft <= 0) {
+                    // Access expired
+                    clearInterval(timerInterval);
+                    localStorage.removeItem('myWorkPal_accessExpiration');
+                    localStorage.removeItem('myWorkPal_currentUser');
+                    alert('Your access has expired. Please enter a new access code.');
+                    lockedPage.classList.add('active');
+                    mainApp.classList.remove('active');
+                    return;
+                }
+                
+                // Calculate days, hours, minutes, seconds
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                
+                // Display the timer
+                let displayText = '';
+                if (days > 0) displayText += `${days}d `;
+                if (hours > 0) displayText += `${hours}h `;
+                if (minutes > 0) displayText += `${minutes}m `;
+                displayText += `${seconds}s`;
+                
+                timerDisplay.textContent = displayText;
+            }, 1000);
+        }
+
+        // Parse access code and calculate expiration
+        function parseAccessCode(code) {
+            const pattern = /^@mdp2025access(\d+)(day|month)$/;
+            const match = code.match(pattern);
+            
+            if (match) {
+                const number = parseInt(match[1]);
+                const unit = match[2];
+                
+                let milliseconds = 0;
+                if (unit === 'day') {
+                    milliseconds = number * 24 * 60 * 60 * 1000; // days to milliseconds
+                } else if (unit === 'month') {
+                    milliseconds = number * 30 * 24 * 60 * 60 * 1000; // months to milliseconds (approx)
+                }
+                
+                return new Date().getTime() + milliseconds;
+            }
+            
+            return null;
+        }
+
+        // Validate Access Code
+        function validateAccessCode(code) {
+            return parseAccessCode(code) !== null;
+        }
+
+        // Show Countdown
+        function showCountdown(seconds) {
+            countdownActive = true;
+            countdownTime = seconds;
+            countdownElement.style.display = 'block';
+            updateCountdownDisplay();
+            
+            countdownInterval = setInterval(() => {
+                countdownTime--;
+                updateCountdownDisplay();
+                
+                if (countdownTime <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownActive = false;
+                    countdownElement.style.display = 'none';
+                    attempts = 3;
+                    accessForm.querySelector('button').disabled = false;
+                    accessAlert.innerHTML = '';
+                }
+            }, 1000);
+        }
+
+        // Update Countdown Display
+        function updateCountdownDisplay() {
+            const minutes = Math.floor(countdownTime / 60);
+            const seconds = countdownTime % 60;
+            countdownElement.textContent = `Please wait ${minutes}:${seconds.toString().padStart(2, '0')} before trying again`;
+        }
+
+        // Handle Access Form Submission
+        accessForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (countdownActive) {
+                alert('Please wait for the countdown to finish before trying again.');
+                return;
+            }
+            
+            const fullname = fullnameInput.value.trim();
+            const accessCode = accessCodeInput.value.trim();
+            
+            if (!fullname || !accessCode) {
+                alert('Please enter both your full name and access code.');
+                return;
+            }
+            
+            const expirationTime = parseAccessCode(accessCode);
+            if (expirationTime) {
+                // Success
+                currentUser = fullname;
+                usernamePlaceholder.textContent = fullname;
+                welcomeUser.textContent = fullname;
+                accessExpiration = expirationTime;
+                
+                // Save to localStorage
+                localStorage.setItem('myWorkPal_accessExpiration', expirationTime.toString());
+                localStorage.setItem('myWorkPal_currentUser', fullname);
+                
+                // Clear the access code field
+                accessCodeInput.value = '';
+                
+                // Show success popup
+                successPopup.classList.add('active');
+                
+                // After 3 seconds, show loading animation
+                setTimeout(() => {
+                    successPopup.classList.remove('active');
+                    loadingAnimation.classList.add('active');
+                    
+                    // After 5 seconds, show main app
+                    setTimeout(() => {
+                        loadingAnimation.classList.remove('active');
+                        lockedPage.classList.remove('active');
+                        mainApp.classList.add('active');
+                        userInfo.style.display = 'flex';
+                        startAccessTimer();
+                        stopDotAnimation(); // Stop the dot animation when leaving locked page
+                    }, 5000);
+                }, 3000);
+                
+            } else {
+                // Failure
+                attempts--;
+                
+                if (attempts <= 0) {
+                    accessForm.querySelector('button').disabled = true;
+                    // Show red alert
+                    accessAlert.innerHTML = '<div class="alert alert-danger">Website will be blocked for 60 seconds due to multiple failed attempts!</div>';
+                    showCountdown(60); // 60 seconds countdown
+                } else {
+                    alert('Invalid access code. Please try again.');
+                }
+            }
+        });
+
+        // Enhanced Floating Timer Drag Functionality
+        floatingTimer.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            dragOffsetX = e.clientX - floatingTimer.getBoundingClientRect().left;
+            dragOffsetY = e.clientY - floatingTimer.getBoundingClientRect().top;
+            floatingTimer.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+            
+            const x = e.clientX - dragOffsetX;
+            const y = e.clientY - dragOffsetY;
+            
+            // Keep within viewport bounds
+            const maxX = window.innerWidth - floatingTimer.offsetWidth;
+            const maxY = window.innerHeight - floatingTimer.offsetHeight;
+            
+            floatingTimer.style.left = `${Math.min(Math.max(0, x), maxX)}px`;
+            floatingTimer.style.top = `${Math.min(Math.max(0, y), maxY)}px`;
+            floatingTimer.style.bottom = 'auto';
+            floatingTimer.style.right = 'auto';
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+            floatingTimer.style.cursor = 'grab';
+        });
+
+        // Settings dropdown
+        settingsBtn.addEventListener('click', function() {
+            settingsDropdown.classList.toggle('active');
+        });
+
+        // Close settings dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!settingsBtn.contains(event.target) && !settingsDropdown.contains(event.target)) {
+                settingsDropdown.classList.remove('active');
+            }
+        });
+
+        // Notification bell
+        notificationBtn.addEventListener('click', function() {
+            notificationDropdown.classList.toggle('active');
+            updateNotifications();
+        });
+
+        // Close notification dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!notificationBtn.contains(event.target) && !notificationDropdown.contains(event.target)) {
+                notificationDropdown.classList.remove('active');
+            }
+        });
+
+        // Clear notifications
+        clearNotificationsBtn.addEventListener('click', function() {
+            notifications = [];
+            localStorage.setItem('myWorkPal_notifications', JSON.stringify(notifications));
+            updateNotificationBadge();
+            updateNotifications();
+        });
+
+        // Update notification badge
+        function updateNotificationBadge() {
+            const unreadCount = notifications.filter(n => !n.read).length;
+            notificationBadge.textContent = unreadCount;
+            notificationBadge.style.display = unreadCount > 0 ? 'flex' : 'none';
+        }
+
+        // Update notifications list
+        function updateNotifications() {
+            notificationList.innerHTML = '';
+            
+            if (notifications.length === 0) {
+                notificationList.innerHTML = '<p style="text-align: center; padding: 10px;">No notifications</p>';
+                return;
+            }
+            
+            // Sort by date (newest first)
+            const sortedNotifications = [...notifications].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedNotifications.forEach(notification => {
+                const notificationItem = document.createElement('div');
+                notificationItem.className = `notification-item ${notification.read ? '' : 'unread'}`;
+                
+                notificationItem.innerHTML = `
+                    <div><strong>${notification.title}</strong></div>
+                    <div>${notification.message}</div>
+                    <div style="font-size: 11px; margin-top: 5px; opacity: 0.7;">${new Date(notification.date).toLocaleString()}</div>
+                `;
+                
+                notificationItem.addEventListener('click', function() {
+                    // Mark as read
+                    if (!notification.read) {
+                        notification.read = true;
+                        localStorage.setItem('myWorkPal_notifications', JSON.stringify(notifications));
+                        updateNotificationBadge();
+                        updateNotifications();
+                    }
+                });
+                
+                notificationList.appendChild(notificationItem);
+            });
+        }
+
+        // Check for pending tickets and create notifications
+        function checkPendingTickets() {
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            
+            // Check if we already notified today
+            const lastNotificationDate = localStorage.getItem('myWorkPal_lastNotificationDate');
+            if (lastNotificationDate === today) return;
+            
+            let pendingCount = 0;
+            let pausedCount = 0;
+            
+            // Count pending and paused tickets
+            for (let date in ticketsData) {
+                const tickets = ticketsData[date];
+                pendingCount += tickets.filter(t => t.status === 'attente').length;
+                pausedCount += tickets.filter(t => t.status === 'pause').length;
+            }
+            
+            // Create notifications if there are pending or paused tickets
+            if (pendingCount > 0) {
+                notifications.unshift({
+                    title: 'Pending Tickets',
+                    message: `You have ${pendingCount} ticket(s) waiting for resolution.`,
+                    date: new Date().toISOString(),
+                    read: false
+                });
+            }
+            
+            if (pausedCount > 0) {
+                notifications.unshift({
+                    title: 'Paused Tickets',
+                    message: `You have ${pausedCount} ticket(s) currently on pause.`,
+                    date: new Date().toISOString(),
+                    read: false
+                });
+            }
+            
+            // Save notifications and update last notification date
+            if (pendingCount > 0 || pausedCount > 0) {
+                localStorage.setItem('myWorkPal_notifications', JSON.stringify(notifications));
+                localStorage.setItem('myWorkPal_lastNotificationDate', today);
+                updateNotificationBadge();
+            }
+        }
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to log out?')) {
+                localStorage.removeItem('myWorkPal_accessExpiration');
+                localStorage.removeItem('myWorkPal_currentUser');
+                lockedPage.classList.add('active');
+                mainApp.classList.remove('active');
+                userInfo.style.display = 'none';
+                if (timerInterval) clearInterval(timerInterval);
+                settingsDropdown.classList.remove('active');
+                startDotAnimation(); // Start dot animation when returning to locked page
+            }
+        });
+
+        // About button
+        aboutBtn.addEventListener('click', function() {
+            infoModal.classList.add('active');
+            settingsDropdown.classList.remove('active');
+        });
+
+        // Font size slider with localStorage persistence
+        fontSlider.value = savedFontSize;
+        document.body.style.fontSize = `${savedFontSize}rem`;
+        currentFontSize = savedFontSize;
+
+        fontSlider.addEventListener('input', function() {
+            currentFontSize = parseFloat(this.value);
+            document.body.style.fontSize = `${currentFontSize}rem`;
+            localStorage.setItem('myWorkPal_fontSize', currentFontSize.toString());
+        });
+
+        // Theme switch with localStorage persistence
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeSwitch.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                themeSwitch.checked = false;
+            }
+        }
+
+        applyTheme(savedTheme);
+
+        themeSwitch.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('myWorkPal_theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('myWorkPal_theme', 'light');
+            }
+            settingsDropdown.classList.remove('active');
+        });
+
+        // Get Started button
+        getStartedBtn.addEventListener('click', function() {
+            // Navigate to call section
+            navLinks.forEach(nav => nav.classList.remove('active'));
+            document.querySelector('.nav-link[data-section="call"]').classList.add('active');
+            
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === 'call') {
+                    section.classList.add('active');
+                }
+            });
+            
+            loadCallContent('english');
+        });
+
+        // Info Modal
+        infoIcon.addEventListener('click', function() {
+            infoModal.classList.add('active');
+        });
+
+        infoClose.addEventListener('click', function() {
+            infoModal.classList.remove('active');
+        });
+
+        // Macro Modal
+        addMailCategoryBtn.addEventListener('click', function() {
+            macroModal.classList.add('active');
+        });
+
+        macroModalClose.addEventListener('click', function() {
+            macroModal.classList.remove('active');
+        });
+
+        // Search Toggle
+        searchToggle.addEventListener('click', function() {
+            searchContainer.classList.toggle('active');
+        });
+
+        // Navigation
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active nav link
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding section
+                const sectionId = this.getAttribute('data-section');
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === sectionId) {
+                        section.classList.add('active');
+                    }
+                });
+                
+                // Load content if needed
+                if (sectionId === 'chat') {
+                    loadChatContent('english');
+                } else if (sectionId === 'call') {
+                    loadCallContent('english');
+                } else if (sectionId === 'mail') {
+                    loadMailContent('english');
+                } else if (sectionId === 'notes') {
+                    loadNotes();
+                } else if (sectionId === 'tickets') {
+                    loadTickets();
+                }
+            });
+        });
+
+        // Image Cards Navigation
+        imageCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const sectionId = this.getAttribute('data-section');
+                
+                // Update active nav link
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                document.querySelector(`.nav-link[data-section="${sectionId}"]`).classList.add('active');
+                
+                // Show corresponding section
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === sectionId) {
+                        section.classList.add('active');
+                    }
+                });
+                
+                // Load content if needed
+                if (sectionId === 'chat') {
+                    loadChatContent('english');
+                } else if (sectionId === 'call') {
+                    loadCallContent('english');
+                } else if (sectionId === 'mail') {
+                    loadMailContent('english');
+                } else if (sectionId === 'notes') {
+                    loadNotes();
+                } else if (sectionId === 'tickets') {
+                    loadTickets();
+                }
+            });
+        });
+
+        // Language Selector
+        langButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const lang = this.getAttribute('data-lang');
+                
+                // Update active language button
+                langButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Load content in selected language
+                const activeSection = document.querySelector('.section.active').id;
+                if (activeSection === 'chat') {
+                    loadChatContent(lang);
+                } else if (activeSection === 'call') {
+                    loadCallContent(lang);
+                } else if (activeSection === 'mail') {
+                    loadMailContent(lang);
+                }
+            });
+        });
+
+        // Enhanced Load Chat Content with 3 columns
+        function loadChatContent(lang) {
+            chatContent.innerHTML = '';
+            const data = chatData[lang];
+            
+            if (!data || data.length === 0) {
+                chatContent.innerHTML = '<p>No chat content available. Add a new category to get started.</p>';
+                return;
+            }
+            
+            // Distribute categories across 3 columns
+            const columns = [[], [], []];
+            data.forEach((category, index) => {
+                columns[index % 3].push(category);
+            });
+            
+            // Create columns
+            columns.forEach((columnData, columnIndex) => {
+                const columnElement = document.createElement('div');
+                columnElement.className = 'chat-column';
+                
+                columnData.forEach((category) => {
+                    const categoryElement = document.createElement('div');
+                    categoryElement.className = 'phrase-category';
+                    
+                    const categoryTitle = document.createElement('h3');
+                    categoryTitle.className = 'category-title';
+                    
+                    const titleText = document.createElement('span');
+                    titleText.textContent = category.category;
+                    
+                    const categoryActions = document.createElement('div');
+                    categoryActions.className = 'category-actions';
+                    
+                    const dropdown = document.createElement('div');
+                    dropdown.className = 'dropdown';
+                    
+                    const dropdownBtn = document.createElement('button');
+                    dropdownBtn.className = 'dropdown-btn';
+                    dropdownBtn.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
+                    
+                    const dropdownContent = document.createElement('div');
+                    dropdownContent.className = 'dropdown-content';
+                    
+                    const addPhraseBtn = document.createElement('button');
+                    addPhraseBtn.textContent = 'Add Phrase';
+                    addPhraseBtn.addEventListener('click', function() {
+                        addChatPhrase(lang, data.indexOf(category));
+                    });
+                    
+                    const deleteCategoryBtn = document.createElement('button');
+                    deleteCategoryBtn.textContent = 'Delete Category';
+                    deleteCategoryBtn.addEventListener('click', function() {
+                        if (confirm('Are you sure you want to delete this category?')) {
+                            deleteChatCategory(lang, data.indexOf(category));
+                        }
+                    });
+                    
+                    dropdownContent.appendChild(addPhraseBtn);
+                    dropdownContent.appendChild(deleteCategoryBtn);
+                    
+                    dropdown.appendChild(dropdownBtn);
+                    dropdown.appendChild(dropdownContent);
+                    
+                    categoryActions.appendChild(dropdown);
+                    
+                    categoryTitle.appendChild(titleText);
+                    categoryTitle.appendChild(categoryActions);
+                    
+                    categoryElement.appendChild(categoryTitle);
+                    
+                    category.phrases.forEach((phrase, phraseIndex) => {
+                        const phraseElement = document.createElement('div');
+                        phraseElement.className = 'phrase-item';
+                        
+                        const phraseText = document.createElement('div');
+                        phraseText.className = 'phrase-text';
+                        phraseText.textContent = phrase;
+                        
+                        const phraseActions = document.createElement('div');
+                        phraseActions.className = 'phrase-actions';
+                        
+                        const copyButton = document.createElement('button');
+                        copyButton.className = 'action-btn copy-btn';
+                        copyButton.innerHTML = '<i class="fas fa-copy"></i>';
+                        copyButton.title = 'Copy to clipboard';
+                        
+                        copyButton.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(phrase).then(() => {
+                                // Show temporary feedback
+                                const originalHTML = copyButton.innerHTML;
+                                copyButton.innerHTML = '<i class="fas fa-check"></i>';
+                                setTimeout(() => {
+                                    copyButton.innerHTML = originalHTML;
+                                }, 1000);
+                            });
+                        });
+                        
+                        phraseActions.appendChild(copyButton);
+                        
+                        // Double-click to edit
+                        phraseElement.addEventListener('dblclick', function() {
+                            editChatPhrase(lang, data.indexOf(category), phraseIndex, phrase);
+                        });
+                        
+                        // Long press to delete
+                        phraseElement.addEventListener('mousedown', function() {
+                            startLongPress(this, () => {
+                                if (confirm('Are you sure you want to delete this phrase?')) {
+                                    deleteChatPhrase(lang, data.indexOf(category), phraseIndex);
+                                }
+                            });
+                        });
+                        
+                        phraseElement.addEventListener('touchstart', function() {
+                            startLongPress(this, () => {
+                                if (confirm('Are you sure you want to delete this phrase?')) {
+                                    deleteChatPhrase(lang, data.indexOf(category), phraseIndex);
+                                }
+                            });
+                        });
+                        
+                        phraseElement.addEventListener('mouseup', cancelLongPress);
+                        phraseElement.addEventListener('mouseleave', cancelLongPress);
+                        phraseElement.addEventListener('touchend', cancelLongPress);
+                        
+                        phraseElement.appendChild(phraseText);
+                        phraseElement.appendChild(phraseActions);
+                        categoryElement.appendChild(phraseElement);
+                    });
+                    
+                    columnElement.appendChild(categoryElement);
+                });
+                
+                chatContent.appendChild(columnElement);
+            });
+        }
+
+        // Long press functionality
+        function startLongPress(element, callback) {
+            longPressTimer = setTimeout(() => {
+                callback();
+            }, 1000); // 1 second for long press
+        }
+
+        function cancelLongPress() {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+        }
+
+        // Add new chat category
+        addChatCategoryBtn.addEventListener('click', function() {
+            const currentLang = document.querySelector('#chat .lang-btn.active').getAttribute('data-lang');
+            const categoryName = prompt('Enter category name:');
+            if (categoryName) {
+                addChatCategory(currentLang, categoryName);
+            }
+        });
+
+        function addChatCategory(lang, name) {
+            if (!chatData[lang]) chatData[lang] = [];
+            
+            chatData[lang].push({
+                category: name,
+                phrases: []
+            });
+            
+            saveChatData();
+            loadChatContent(lang);
+        }
+
+        function deleteChatCategory(lang, categoryIndex) {
+            chatData[lang].splice(categoryIndex, 1);
+            saveChatData();
+            loadChatContent(lang);
+        }
+
+        function addChatPhrase(lang, categoryIndex) {
+            const phrase = prompt('Enter new phrase:');
+            if (phrase) {
+                chatData[lang][categoryIndex].phrases.push(phrase);
+                saveChatData();
+                loadChatContent(lang);
+            }
+        }
+
+        function editChatPhrase(lang, categoryIndex, phraseIndex, currentPhrase) {
+            const newPhrase = prompt('Edit phrase:', currentPhrase);
+            if (newPhrase !== null) {
+                chatData[lang][categoryIndex].phrases[phraseIndex] = newPhrase;
+                saveChatData();
+                loadChatContent(lang);
+            }
+        }
+
+        function deleteChatPhrase(lang, categoryIndex, phraseIndex) {
+            chatData[lang][categoryIndex].phrases.splice(phraseIndex, 1);
+            saveChatData();
+            loadChatContent(lang);
+        }
+
+        function saveChatData() {
+            localStorage.setItem('myWorkPal_chatData', JSON.stringify(chatData));
+        }
+
+        // Load Call Content
+        function loadCallContent(lang) {
+            callContent.innerHTML = '';
+            const data = callData[lang];
+            
+            if (!data || data.length === 0) {
+                callContent.innerHTML = '<p>No call content available. Add a new category to get started.</p>';
+                return;
+            }
+            
+            data.forEach((category, categoryIndex) => {
+                const categoryElement = document.createElement('div');
+                categoryElement.className = 'call-category';
+                
+                const categoryTitle = document.createElement('h3');
+                
+                const titleText = document.createElement('span');
+                titleText.textContent = category.category;
+                
+                const categoryActions = document.createElement('div');
+                categoryActions.className = 'category-actions';
+                
+                const dropdown = document.createElement('div');
+                dropdown.className = 'dropdown';
+                
+                const dropdownBtn = document.createElement('button');
+                dropdownBtn.className = 'dropdown-btn';
+                dropdownBtn.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
+                
+                const dropdownContent = document.createElement('div');
+                dropdownContent.className = 'dropdown-content';
+                
+                const addPhraseBtn = document.createElement('button');
+                addPhraseBtn.textContent = 'Add Phrase';
+                addPhraseBtn.addEventListener('click', function() {
+                    addCallPhrase(lang, categoryIndex);
+                });
+                
+                const deleteCategoryBtn = document.createElement('button');
+                deleteCategoryBtn.textContent = 'Delete Category';
+                deleteCategoryBtn.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to delete this category?')) {
+                        deleteCallCategory(lang, categoryIndex);
+                    }
+                });
+                
+                dropdownContent.appendChild(addPhraseBtn);
+                dropdownContent.appendChild(deleteCategoryBtn);
+                
+                dropdown.appendChild(dropdownBtn);
+                dropdown.appendChild(dropdownContent);
+                
+                categoryActions.appendChild(dropdown);
+                
+                categoryTitle.appendChild(titleText);
+                categoryTitle.appendChild(categoryActions);
+                
+                categoryElement.appendChild(categoryTitle);
+                
+                category.phrases.forEach((phrase, phraseIndex) => {
+                    const phraseElement = document.createElement('div');
+                    phraseElement.className = 'call-phrase';
+                    
+                    const phraseText = document.createElement('div');
+                    phraseText.className = 'phrase-text';
+                    phraseText.textContent = phrase;
+                    
+                    const phraseActions = document.createElement('div');
+                    phraseActions.className = 'phrase-actions';
+                    
+                    const copyButton = document.createElement('button');
+                    copyButton.className = 'action-btn copy-btn';
+                    copyButton.innerHTML = '<i class="fas fa-copy"></i>';
+                    copyButton.title = 'Copy to clipboard';
+                    
+                    copyButton.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        navigator.clipboard.writeText(phrase).then(() => {
+                            // Show temporary feedback
+                            const originalHTML = copyButton.innerHTML;
+                            copyButton.innerHTML = '<i class="fas fa-check"></i>';
+                            setTimeout(() => {
+                                copyButton.innerHTML = originalHTML;
+                            }, 1000);
+                        });
+                    });
+                    
+                    phraseActions.appendChild(copyButton);
+                    
+                    // Double-click to edit
+                    phraseElement.addEventListener('dblclick', function() {
+                        editCallPhrase(lang, categoryIndex, phraseIndex, phrase);
+                    });
+                    
+                    // Long press to delete
+                    phraseElement.addEventListener('mousedown', function() {
+                        startLongPress(this, () => {
+                            if (confirm('Are you sure you want to delete this phrase?')) {
+                                deleteCallPhrase(lang, categoryIndex, phraseIndex);
+                            }
+                        });
+                    });
+                    
+                    phraseElement.addEventListener('touchstart', function() {
+                        startLongPress(this, () => {
+                            if (confirm('Are you sure you want to delete this phrase?')) {
+                                deleteCallPhrase(lang, categoryIndex, phraseIndex);
+                            }
+                        });
+                    });
+                    
+                    phraseElement.addEventListener('mouseup', cancelLongPress);
+                    phraseElement.addEventListener('mouseleave', cancelLongPress);
+                    phraseElement.addEventListener('touchend', cancelLongPress);
+                    
+                    phraseElement.appendChild(phraseText);
+                    phraseElement.appendChild(phraseActions);
+                    categoryElement.appendChild(phraseElement);
+                });
+                
+                callContent.appendChild(categoryElement);
+            });
+        }
+
+        // Add new call category
+        addCallCategoryBtn.addEventListener('click', function() {
+            const currentLang = document.querySelector('#call .lang-btn.active').getAttribute('data-lang');
+            const categoryName = prompt('Enter category name:');
+            if (categoryName) {
+                addCallCategory(currentLang, categoryName);
+            }
+        });
+
+        function addCallCategory(lang, name) {
+            if (!callData[lang]) callData[lang] = [];
+            
+            callData[lang].push({
+                category: name,
+                phrases: []
+            });
+            
+            saveCallData();
+            loadCallContent(lang);
+        }
+
+        function deleteCallCategory(lang, categoryIndex) {
+            callData[lang].splice(categoryIndex, 1);
+            saveCallData();
+            loadCallContent(lang);
+        }
+
+        function addCallPhrase(lang, categoryIndex) {
+            const phrase = prompt('Enter new phrase:');
+            if (phrase) {
+                callData[lang][categoryIndex].phrases.push(phrase);
+                saveCallData();
+                loadCallContent(lang);
+            }
+        }
+
+        function editCallPhrase(lang, categoryIndex, phraseIndex, currentPhrase) {
+            const newPhrase = prompt('Edit phrase:', currentPhrase);
+            if (newPhrase !== null) {
+                callData[lang][categoryIndex].phrases[phraseIndex] = newPhrase;
+                saveCallData();
+                loadCallContent(lang);
+            }
+        }
+
+        function deleteCallPhrase(lang, categoryIndex, phraseIndex) {
+            callData[lang][categoryIndex].phrases.splice(phraseIndex, 1);
+            saveCallData();
+            loadCallContent(lang);
+        }
+
+        function saveCallData() {
+            localStorage.setItem('myWorkPal_callData', JSON.stringify(callData));
+        }
+
+        // Enhanced Load Mail Content with bilingual support
+        function loadMailContent(lang) {
+            userMailTemplates.innerHTML = '';
+            
+            // Load user templates if any
+            if (mailData[lang] && mailData[lang].length > 0) {
+                mailData[lang].forEach((category, categoryIndex) => {
+                    const categoryElement = document.createElement('div');
+                    categoryElement.className = 'mail-template';
+                    
+                    const categoryTitle = document.createElement('h3');
+                    categoryTitle.textContent = category.category;
+                    
+                    categoryElement.appendChild(categoryTitle);
+                    
+                    category.templates.forEach((template, templateIndex) => {
+                        const mailText = document.createElement('div');
+                        mailText.className = 'mail-text';
+                        
+                        mailText.innerHTML = `
+                            <button class="mail-copy" title="Copy to clipboard">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <h4>${template.title}</h4>
+                            <p>${template.content.replace(/\n/g, '<br>')}</p>
+                        `;
+                        
+                        // Add copy functionality
+                        const copyBtn = mailText.querySelector('.mail-copy');
+                        copyBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(template.content).then(() => {
+                                const originalHTML = copyBtn.innerHTML;
+                                copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                                setTimeout(() => {
+                                    copyBtn.innerHTML = originalHTML;
+                                }, 1000);
+                            });
+                        });
+                        
+                        // Double-click to edit
+                        mailText.addEventListener('dblclick', function() {
+                            editMailTemplate(lang, categoryIndex, templateIndex, template);
+                        });
+                        
+                        // Long press to delete
+                        mailText.addEventListener('mousedown', function() {
+                            startLongPress(this, () => {
+                                if (confirm('Are you sure you want to delete this template?')) {
+                                    deleteMailTemplate(lang, categoryIndex, templateIndex);
+                                }
+                            });
+                        });
+                        
+                        mailText.addEventListener('touchstart', function() {
+                            startLongPress(this, () => {
+                                if (confirm('Are you sure you want to delete this template?')) {
+                                    deleteMailTemplate(lang, categoryIndex, templateIndex);
+                                }
+                            });
+                        });
+                        
+                        mailText.addEventListener('mouseup', cancelLongPress);
+                        mailText.addEventListener('mouseleave', cancelLongPress);
+                        mailText.addEventListener('touchend', cancelLongPress);
+                        
+                        categoryElement.appendChild(mailText);
+                    });
+                    
+                    userMailTemplates.appendChild(categoryElement);
+                });
+            } else {
+                userMailTemplates.innerHTML = '<p>No custom templates yet. Add your first template using the + button.</p>';
+            }
+        }
+
+        function editMailTemplate(lang, categoryIndex, templateIndex, template) {
+            const newTitle = prompt('Edit title:', template.title);
+            if (newTitle === null) return;
+            
+            const newContent = prompt('Edit content:', template.content);
+            if (newContent !== null) {
+                mailData[lang][categoryIndex].templates[templateIndex] = {
+                    title: newTitle,
+                    content: newContent
+                };
+                saveMailData();
+                loadMailContent(lang);
+            }
+        }
+
+        function deleteMailTemplate(lang, categoryIndex, templateIndex) {
+            mailData[lang][categoryIndex].templates.splice(templateIndex, 1);
+            saveMailData();
+            loadMailContent(lang);
+        }
+
+        // Add new mail category
+        function addMailCategory(lang, name) {
+            if (!mailData[lang]) mailData[lang] = [];
+            
+            mailData[lang].push({
+                category: name,
+                templates: []
+            });
+            
+            saveMailData();
+            loadMailContent(lang);
+        }
+
+        // Add New Macro
+        macroForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('macro-title').value.trim();
+            const content = document.getElementById('macro-content').value.trim();
+            
+            if (!title || !content) {
+                alert('Please enter both title and content for the macro.');
+                return;
+            }
+            
+            // Add to mailData
+            const currentLang = document.querySelector('.lang-btn.active').getAttribute('data-lang');
+            if (!mailData[currentLang]) mailData[currentLang] = [];
+            if (!mailData[currentLang][0]) mailData[currentLang].push({ category: 'User Templates', templates: [] });
+            
+            mailData[currentLang][0].templates.push({
+                title: title,
+                content: content
+            });
+            
+            saveMailData();
+            loadMailContent(currentLang);
+            
+            // Reset form and close modal
+            macroForm.reset();
+            macroModal.classList.remove('active');
+        });
+
+        function saveMailData() {
+            localStorage.setItem('myWorkPal_mailData', JSON.stringify(mailData));
+        }
+
+        // Mail Copy Buttons
+        mailCopyButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const mailText = this.parentElement.querySelector('p').textContent;
+                navigator.clipboard.writeText(mailText).then(() => {
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                    }, 1000);
+                });
+            });
+        });
+
+        // Chat Search Functionality
+        chatSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            searchResultsContent.innerHTML = '';
+            
+            if (searchTerm.length < 2) {
+                return;
+            }
+            
+            const results = [];
+            
+            // Search in English chat data
+            if (chatData.english) {
+                chatData.english.forEach(category => {
+                    const matchingPhrases = category.phrases.filter(phrase => 
+                        phrase.toLowerCase().includes(searchTerm)
+                    );
+                    
+                    if (matchingPhrases.length > 0) {
+                        results.push({
+                            category: category.category,
+                            language: 'English',
+                            phrases: matchingPhrases
+                        });
+                    }
+                });
+            }
+            
+            // Search in French chat data
+            if (chatData.french) {
+                chatData.french.forEach(category => {
+                    const matchingPhrases = category.phrases.filter(phrase => 
+                        phrase.toLowerCase().includes(searchTerm)
+                    );
+                    
+                    if (matchingPhrases.length > 0) {
+                        results.push({
+                            category: category.category,
+                            language: 'French',
+                            phrases: matchingPhrases
+                        });
+                    }
+                });
+            }
+            
+            // Display results
+            if (results.length === 0) {
+                searchResultsContent.innerHTML = '<p>No results found.</p>';
+                return;
+            }
+            
+            results.forEach(result => {
+                const resultElement = document.createElement('div');
+                resultElement.className = 'search-result-item';
+                resultElement.style.marginBottom = '15px';
+                resultElement.style.padding = '10px';
+                resultElement.style.backgroundColor = 'var(--bg-color)';
+                resultElement.style.borderRadius = '5px';
+                
+                const categoryTitle = document.createElement('h4');
+                categoryTitle.textContent = `${result.category} (${result.language})`;
+                categoryTitle.style.marginBottom = '10px';
+                categoryTitle.style.color = 'var(--primary-color)';
+                
+                resultElement.appendChild(categoryTitle);
+                
+                result.phrases.forEach(phrase => {
+                    const phraseElement = document.createElement('div');
+                    phraseElement.className = 'search-phrase';
+                    phraseElement.style.display = 'flex';
+                    phraseElement.style.justifyContent = 'space-between';
+                    phraseElement.style.alignItems = 'center';
+                    phraseElement.style.padding = '5px 0';
+                    phraseElement.style.borderBottom = '1px solid var(--border-color)';
+                    
+                    const phraseText = document.createElement('span');
+                    phraseText.textContent = phrase;
+                    
+                    const copyButton = document.createElement('button');
+                    copyButton.className = 'action-btn copy-btn';
+                    copyButton.innerHTML = '<i class="fas fa-copy"></i>';
+                    copyButton.title = 'Copy to clipboard';
+                    
+                    copyButton.addEventListener('click', function() {
+                        navigator.clipboard.writeText(phrase).then(() => {
+                            const originalHTML = copyButton.innerHTML;
+                            copyButton.innerHTML = '<i class="fas fa-check"></i>';
+                            setTimeout(() => {
+                                copyButton.innerHTML = originalHTML;
+                            }, 1000);
+                        });
+                    });
+                    
+                    phraseElement.appendChild(phraseText);
+                    phraseElement.appendChild(copyButton);
+                    resultElement.appendChild(phraseElement);
+                });
+                
+                searchResultsContent.appendChild(resultElement);
+            });
+        });
+
+        // Notes functionality
+        addNoteFab.addEventListener('click', function() {
+            editingNoteId = null;
+            noteEditorTitle.value = '';
+            noteEditorContent.value = '';
+            noteEditorPinned.checked = false;
+            
+            // Show note editor and hide notes list
+            document.getElementById('notes').classList.remove('active');
+            noteEditorSection.classList.add('active');
+        });
+
+        backToNotesBtn.addEventListener('click', function() {
+            // Show notes list and hide note editor
+            noteEditorSection.classList.remove('active');
+            document.getElementById('notes').classList.add('active');
+            loadNotes();
+        });
+
+        saveNoteBtn.addEventListener('click', function() {
+            const title = noteEditorTitle.value.trim();
+            const content = noteEditorContent.value.trim();
+            const pinned = noteEditorPinned.checked;
+            
+            if (!title || !content) {
+                alert('Please enter both title and content for the note.');
+                return;
+            }
+            
+            if (editingNoteId !== null) {
+                // Update existing note
+                notesData[editingNoteId] = {
+                    title: title,
+                    content: content,
+                    pinned: pinned,
+                    date: notesData[editingNoteId].date,
+                    id: notesData[editingNoteId].id
+                };
+            } else {
+                // Add new note
+                notesData.push({
+                    title: title,
+                    content: content,
+                    pinned: pinned,
+                    date: new Date().toLocaleDateString(),
+                    id: Date.now().toString()
+                });
+            }
+            
+            saveNotesData();
+            
+            // Show notes list and hide note editor
+            noteEditorSection.classList.remove('active');
+            document.getElementById('notes').classList.add('active');
+            loadNotes();
+        });
+
+        function loadNotes() {
+            notesContainer.innerHTML = '';
+            
+            if (notesData.length === 0) {
+                notesContainer.innerHTML = '<p>No notes yet. Click the + button to add your first note.</p>';
+                return;
+            }
+            
+            // Sort notes: pinned first, then by date (newest first)
+            const sortedNotes = [...notesData].sort((a, b) => {
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+                return new Date(b.id) - new Date(a.id);
+            });
+            
+            sortedNotes.forEach((note, index) => {
+                const noteCard = document.createElement('div');
+                noteCard.className = `note-card ${note.pinned ? 'pinned' : ''}`;
+                
+                noteCard.innerHTML = `
+                    <div class="note-header">
+                        <div class="note-title">${note.title}</div>
+                        <div class="note-actions">
+                            <div class="dropdown">
+                                <button class="dropdown-btn">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-content">
+                                    <button class="edit-note">Edit Note</button>
+                                    <button class="${note.pinned ? 'unpin-note' : 'pin-note'}">${note.pinned ? 'Unpin Note' : 'Pin Note'}</button>
+                                    <button class="delete-note">Delete Note</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="note-content">${note.content.replace(/\n/g, '<br>')}</div>
+                    <div class="note-date">Created: ${note.date}</div>
+                `;
+                
+                // Edit button
+                const editBtn = noteCard.querySelector('.edit-note');
+                editBtn.addEventListener('click', function() {
+                    editingNoteId = notesData.findIndex(n => n.id === note.id);
+                    noteEditorTitle.value = note.title;
+                    noteEditorContent.value = note.content;
+                    noteEditorPinned.checked = note.pinned;
+                    
+                    // Show note editor and hide notes list
+                    document.getElementById('notes').classList.remove('active');
+                    noteEditorSection.classList.add('active');
+                });
+                
+                // Pin/Unpin button
+                const pinBtn = noteCard.querySelector('.pin-note, .unpin-note');
+                pinBtn.addEventListener('click', function() {
+                    const noteIndex = notesData.findIndex(n => n.id === note.id);
+                    notesData[noteIndex].pinned = !notesData[noteIndex].pinned;
+                    saveNotesData();
+                    loadNotes();
+                });
+                
+                // Delete button
+                const deleteBtn = noteCard.querySelector('.delete-note');
+                deleteBtn.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to delete this note?')) {
+                        const noteIndex = notesData.findIndex(n => n.id === note.id);
+                        notesData.splice(noteIndex, 1);
+                        saveNotesData();
+                        loadNotes();
+                    }
+                });
+                
+                notesContainer.appendChild(noteCard);
+            });
+        }
+
+        function saveNotesData() {
+            localStorage.setItem('myWorkPal_notesData', JSON.stringify(notesData));
+        }
+
+        // Enhanced Daily Goal functionality
+        goalIcon.addEventListener('click', function() {
+            goalForm.classList.toggle('active');
+        });
+
+        goalForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const goal = parseInt(dailyGoalInput.value);
+            if (goal && goal > 0) {
+                dailyGoal = goal;
+                localStorage.setItem('myWorkPal_dailyGoal', dailyGoal.toString());
+                updateTicketsStats(ticketsData[new Date().toISOString().split('T')[0]] || []);
+                updateCharts();
+                goalForm.classList.remove('active');
+                alert('Daily goal updated successfully!');
+            } else {
+                alert('Please enter a valid daily goal.');
+            }
+        });
+
+        // Enhanced Ticket functionality
+        function loadTickets() {
+            // Set current date
+            const now = new Date();
+            const currentDate = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            ticketDate.textContent = currentDate;
+            
+            // Set daily goal
+            dailyGoalInput.value = dailyGoal;
+            
+            // Load tickets for current date
+            const dateKey = now.toISOString().split('T')[0];
+            if (!ticketsData[dateKey]) {
+                ticketsData[dateKey] = [];
+            }
+            
+            renderTicketsTable(ticketsData[dateKey]);
+            updateTicketsStats(ticketsData[dateKey]);
+            loadHistory();
+            updateCharts();
+        }
+
+        function renderTicketsTable(tickets) {
+            ticketTableBody.innerHTML = '';
+            
+            if (tickets.length === 0) {
+                ticketTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No tickets for today. Add your first ticket using the button below.</td></tr>';
+                return;
+            }
+            
+            const dateKey = new Date().toISOString().split('T')[0];
+            
+            tickets.forEach((ticket, index) => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td class="ticket-number">${ticket.number}</td>
+                    <td>
+                        <span class="ticket-type-display">${ticket.type}</span>
+                    </td>
+                    <td>
+                        <span class="ticket-request-display">${ticket.request}</span>
+                    </td>
+                    <td>
+                        <span class="ticket-level-display">${ticket.level}</span>
+                    </td>
+                    <td>
+                        <span class="ticket-status-display ${ticket.status}">${getStatusText(ticket.status)}</span>
+                    </td>
+                    <td>
+                        <button class="btn edit-ticket" title="Edit Ticket">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger delete-ticket" title="Delete Ticket">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                // Edit button
+                const editBtn = row.querySelector('.edit-ticket');
+                editBtn.addEventListener('click', function() {
+                    openTicketModal(index, dateKey, false);
+                });
+                
+                // Delete button
+                const deleteBtn = row.querySelector('.delete-ticket');
+                deleteBtn.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to delete this ticket?')) {
+                        tickets.splice(index, 1);
+                        saveTicketsData();
+                        renderTicketsTable(tickets);
+                        updateTicketsStats(tickets);
+                        updateCharts();
+                    }
+                });
+                
+                ticketTableBody.appendChild(row);
+            });
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'resolu': 'Résolu',
+                'attente': 'En attente',
+                'pause': 'En pause',
+                'ouvert': 'Ouvert'
+            };
+            return statusMap[status] || status;
+        }
+
+        function updateTicketsStats(tickets) {
+            const now = new Date();
+            const dateKey = now.toISOString().split('T')[0];
+            
+            // Today's tickets
+            const todayTickets = ticketsData[dateKey] || [];
+            ticketsToday.textContent = todayTickets.length;
+            
+            // Resolved tickets
+            const resolvedTickets = todayTickets.filter(ticket => ticket.status === 'resolu').length;
+            ticketsResolved.textContent = resolvedTickets;
+            
+            // Paused tickets
+            const pausedTickets = todayTickets.filter(ticket => ticket.status === 'pause').length;
+            ticketsPaused.textContent = pausedTickets;
+            
+            // Pending tickets
+            const pendingTickets = todayTickets.filter(ticket => ticket.status === 'attente').length;
+            ticketsPending.textContent = pendingTickets;
+            
+            // This week's tickets
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay());
+            weekStart.setHours(0, 0, 0, 0);
+            
+            let weekTickets = 0;
+            for (let date in ticketsData) {
+                const ticketDate = new Date(date);
+                if (ticketDate >= weekStart) {
+                    weekTickets += ticketsData[date].length;
+                }
+            }
+            ticketsWeek.textContent = weekTickets;
+            
+            // Goal percentage
+            const percentage = dailyGoal > 0 ? Math.min(Math.round((todayTickets.length / dailyGoal) * 100), 100) : 0;
+            goalPercentage.textContent = `${percentage}%`;
+            goalProgress.textContent = `You reached ${percentage}% of your daily goal.`;
+        }
+
+        function loadHistory() {
+            historyList.innerHTML = '';
+            
+            // Get last 3 months
+            const now = new Date();
+            const months = [];
+            
+            for (let i = 0; i < 3; i++) {
+                const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const monthKey = date.toISOString().slice(0, 7); // YYYY-MM format
+                months.push(monthKey);
+            }
+            
+            months.forEach(month => {
+                let monthTickets = 0;
+                let monthResolved = 0;
+                
+                for (let date in ticketsData) {
+                    if (date.startsWith(month)) {
+                        monthTickets += ticketsData[date].length;
+                        monthResolved += ticketsData[date].filter(ticket => ticket.status === 'resolu').length;
+                    }
+                }
+                
+                if (monthTickets > 0) {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    
+                    const monthName = new Date(month + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                    historyItem.innerHTML = `
+                        <div><strong>${monthName}</strong></div>
+                        <div>Tickets: ${monthTickets}</div>
+                        <div>Resolved: ${monthResolved}</div>
+                    `;
+                    
+                    historyList.appendChild(historyItem);
+                }
+            });
+            
+            if (historyList.children.length === 0) {
+                historyList.innerHTML = '<p>No history available.</p>';
+            }
+        }
+
+        // Enhanced Add Ticket Button
+        addTicketBtn.addEventListener('click', function() {
+            const now = new Date();
+            const dateKey = now.toISOString().split('T')[0];
+            openTicketModal(null, dateKey, true);
+        });
+
+        // Add Ticket FAB
+        addTicketFab.addEventListener('click', function() {
+            const now = new Date();
+            const dateKey = now.toISOString().split('T')[0];
+            openTicketModal(null, dateKey, true);
+        });
+
+        function saveTicketsData() {
+            localStorage.setItem('myWorkPal_ticketsData', JSON.stringify(ticketsData));
+        }
+
+        function openTicketModal(ticketIndex, dateKey, isNew = false) {
+            editingTicketIndex = ticketIndex;
+            editingTicketDate = dateKey;
+            
+            const tickets = ticketsData[dateKey] || [];
+            
+            if (isNew) {
+                ticketModalTitle.textContent = 'Add New Ticket';
+                ticketForm.reset();
+                document.getElementById('ticket-number').value = `TKT-${Date.now().toString().slice(-6)}`;
+            } else {
+                ticketModalTitle.textContent = 'Edit Ticket';
+                const ticket = tickets[ticketIndex];
+                document.getElementById('ticket-number').value = ticket.number;
+                document.getElementById('ticket-type').value = ticket.type;
+                document.getElementById('ticket-request').value = ticket.request;
+                document.getElementById('ticket-level').value = ticket.level;
+                document.getElementById('ticket-status').value = ticket.status;
+                document.getElementById('ticket-notes').value = ticket.notes || '';
+            }
+            
+            ticketModal.classList.add('active');
+        }
+
+        // Enhanced Ticket Form Submission
+        ticketForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const number = document.getElementById('ticket-number').value;
+            const type = document.getElementById('ticket-type').value;
+            const request = document.getElementById('ticket-request').value;
+            const level = document.getElementById('ticket-level').value;
+            const status = document.getElementById('ticket-status').value;
+            const notes = document.getElementById('ticket-notes').value;
+            
+            if (!number) {
+                alert('Please enter a ticket number.');
+                return;
+            }
+            
+            if (!ticketsData[editingTicketDate]) {
+                ticketsData[editingTicketDate] = [];
+            }
+            
+            const ticketData = {
+                number: number,
+                type: type,
+                request: request,
+                level: level,
+                status: status,
+                notes: notes
+            };
+            
+            if (editingTicketIndex === null) {
+                // Add new ticket
+                ticketsData[editingTicketDate].push(ticketData);
+            } else {
+                // Update existing ticket
+                ticketsData[editingTicketDate][editingTicketIndex] = ticketData;
+            }
+            
+            saveTicketsData();
+            renderTicketsTable(ticketsData[editingTicketDate]);
+            updateTicketsStats(ticketsData[editingTicketDate]);
+            updateCharts();
+            
+            ticketModal.classList.remove('active');
+        });
+
+        // Close Ticket Modal
+        ticketClose.addEventListener('click', function() {
+            ticketModal.classList.remove('active');
+        });
+
+        // Enhanced Charts
+        function updateCharts() {
+            const now = new Date();
+            const dateKey = now.toISOString().split('T')[0];
+            const todayTickets = ticketsData[dateKey] || [];
+            
+            // Goal Progress Chart
+            if (goalChart) {
+                goalChart.destroy();
+            }
+            
+            const goalCtx = document.getElementById('goalChart').getContext('2d');
+            goalChart = new Chart(goalCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Remaining'],
+                    datasets: [{
+                        data: [todayTickets.length, Math.max(0, dailyGoal - todayTickets.length)],
+                        backgroundColor: [
+                            'rgba(75, 181, 67, 0.8)',
+                            'rgba(200, 200, 200, 0.3)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 181, 67, 1)',
+                            'rgba(200, 200, 200, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: ${value}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Ticket Status Chart
+            if (ticketChart) {
+                ticketChart.destroy();
+            }
+            
+            const ticketCtx = document.getElementById('ticketChart').getContext('2d');
+            const statusCounts = {
+                'Résolu': todayTickets.filter(t => t.status === 'resolu').length,
+                'En attente': todayTickets.filter(t => t.status === 'attente').length,
+                'En pause': todayTickets.filter(t => t.status === 'pause').length,
+                'Ouvert': todayTickets.filter(t => t.status === 'ouvert').length
+            };
+            
+            ticketChart = new Chart(ticketCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(statusCounts),
+                    datasets: [{
+                        label: 'Tickets by Status',
+                        data: Object.values(statusCounts),
+                        backgroundColor: [
+                            'rgba(75, 181, 67, 0.8)',
+                            'rgba(255, 204, 0, 0.8)',
+                            'rgba(30, 144, 255, 0.8)',
+                            'rgba(220, 53, 69, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 181, 67, 1)',
+                            'rgba(255, 204, 0, 1)',
+                            'rgba(30, 144, 255, 1)',
+                            'rgba(220, 53, 69, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Tickets Chart on Tickets Page
+            if (ticketsChart) {
+                ticketsChart.destroy();
+            }
+            
+            const ticketsCtx = document.getElementById('tickets-chart').getContext('2d');
+            
+            // Get last 7 days of tickets
+            const last7Days = [];
+            const dayLabels = [];
+            const dayCounts = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateKey = date.toISOString().split('T')[0];
+                const dayTickets = ticketsData[dateKey] || [];
+                
+                last7Days.push(dayTickets);
+                dayLabels.push(date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }));
+                dayCounts.push(dayTickets.length);
+            }
+            
+            ticketsChart = new Chart(ticketsCtx, {
+                type: 'line',
+                data: {
+                    labels: dayLabels,
+                    datasets: [{
+                        label: 'Tickets per Day',
+                        data: dayCounts,
+                        backgroundColor: 'rgba(30, 144, 255, 0.2)',
+                        borderColor: 'rgba(30, 144, 255, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Slider functionality
+        function initSlider() {
+            if (sliderInterval) clearInterval(sliderInterval);
+            
+            sliderInterval = setInterval(() => {
+                currentSlide = (currentSlide + 1) % 3;
+                updateSlider();
+            }, 5000);
+            
+            // Add click events to dots
+            sliderDots.forEach(dot => {
+                dot.addEventListener('click', function() {
+                    currentSlide = parseInt(this.getAttribute('data-slide'));
+                    updateSlider();
+                    // Reset interval
+                    clearInterval(sliderInterval);
+                    sliderInterval = setInterval(() => {
+                        currentSlide = (currentSlide + 1) % 3;
+                        updateSlider();
+                    }, 5000);
+                });
+            });
+        }
+
+        function updateSlider() {
+            slides.style.transform = `translateX(-${currentSlide * 33.333}%)`;
+            
+            // Update active dot
+            sliderDots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // Carousel functionality
+        function initCarousel() {
+            if (carouselInterval) clearInterval(carouselInterval);
+            
+            carouselInterval = setInterval(() => {
+                carouselSlide = (carouselSlide + 1) % 3;
+                updateCarousel();
+            }, 4000);
+            
+            // Add click events to dots
+            carouselDots.forEach(dot => {
+                dot.addEventListener('click', function() {
+                    carouselSlide = parseInt(this.getAttribute('data-slide'));
+                    updateCarousel();
+                    // Reset interval
+                    clearInterval(carouselInterval);
+                    carouselInterval = setInterval(() => {
+                        carouselSlide = (carouselSlide + 1) % 3;
+                        updateCarousel();
+                    }, 4000);
+                });
+            });
+        }
+
+        function updateCarousel() {
+            carouselSlides.style.transform = `translateX(-${carouselSlide * 100}%)`;
+            
+            // Update active dot
+            carouselDots.forEach((dot, index) => {
+                if (index === carouselSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // Floating Dots Animation
+        function startDotAnimation() {
+            // Create dots for CSS animation
+            for (let i = 0; i < 50; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                dot.style.left = `${Math.random() * 100}%`;
+                dot.style.animationDelay = `${Math.random() * 15}s`;
+                dot.style.setProperty('--tx', `${(Math.random() - 0.5) * 100}px`);
+                dot.style.width = `${2 + Math.random() * 3}px`;
+                dot.style.height = dot.style.width;
+                dot.style.opacity = 0.3 + Math.random() * 0.7;
+                floatingDots.appendChild(dot);
+            }
+        }
+
+        function stopDotAnimation() {
+            floatingDots.innerHTML = '';
+        }
+
+        // Canvas Particle Animation
+        function initParticles() {
+            const canvas = particlesCanvas;
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Create particles
+            particles = [];
+            const particleCount = Math.min(100, Math.floor((canvas.width * canvas.height) / 10000));
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 1,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    speedY: (Math.random() - 0.5) * 0.5,
+                    color: `rgba(255, 255, 255, ${0.2 + Math.random() * 0.3})`
+                });
+            }
+            
+            // Animation loop
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Update and draw particles
+                particles.forEach(particle => {
+                    // Move particle
+                    particle.x += particle.speedX;
+                    particle.y += particle.speedY;
+                    
+                    // Wrap around edges
+                    if (particle.x < 0) particle.x = canvas.width;
+                    if (particle.x > canvas.width) particle.x = 0;
+                    if (particle.y < 0) particle.y = canvas.height;
+                    if (particle.y > canvas.height) particle.y = 0;
+                    
+                    // Draw particle
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fillStyle = particle.color;
+                    ctx.fill();
+                    
+                    // Draw connections
+                    particles.forEach(otherParticle => {
+                        const dx = particle.x - otherParticle.x;
+                        const dy = particle.y - otherParticle.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - distance / 100)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particle.x, particle.y);
+                            ctx.lineTo(otherParticle.x, otherParticle.y);
+                            ctx.stroke();
+                        }
+                    });
+                });
+                
+                animationFrameId = requestAnimationFrame(animateParticles);
+            }
+            
+            animateParticles();
+        }
+
+        function stopParticles() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+        }
+
+        // Initialize the application
+        function init() {
+            // Check if access is still valid
+            if (checkAccessValidity()) {
+                // Access is valid, show main app
+                lockedPage.classList.remove('active');
+                mainApp.classList.add('active');
+                stopDotAnimation(); // Stop dots when main app is shown
+                initParticles(); // Start canvas particles for main app
+            } else {
+                startDotAnimation(); // Start dot animation on locked page
+            }
+            
+            // Check for pending tickets and create notifications
+            checkPendingTickets();
+            updateNotificationBadge();
+            
+            // Load initial content
+            loadMailContent('english');
+            loadNotes();
+            loadTickets();
+            initSlider();
+            initCarousel();
+            updateCharts();
+        }
+
+        // Start the application
+        init();
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            stopParticles();
+        });
+    </script>
+</body>
+</html>
